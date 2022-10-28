@@ -1,7 +1,7 @@
 {
   "name": "awesomeproject3",
   "version": "1.0.0",
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "main.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -9,10 +9,14 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-material/core": "^1.3.7",
     "expo": "~46.0.16",
     "expo-status-bar": "~1.4.0",
+    "nativewind": "^2.0.11",
     "react": "18.0.0",
-    "react-native": "0.69.6"
+    "react-native": "0.69.6",
+    "react-redux": "^8.0.4",
+    "tailwindcss": "^3.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
