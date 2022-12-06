@@ -1,21 +1,15 @@
-// import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from "react";
-import { StyleSheet, View, Alert, Image, ToastAndroid, SafeAreaView } from 'react-native';
-import { AppBar, Avatar, Dialog, IconButton, Text, TextInput } from '@react-native-material/core';
-import { Button, Snackbar } from "react-native-paper";
-// import  from '@react-native-material/core'
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import React from "react";
+import { View, SafeAreaView } from 'react-native';
+import { AppBar, Text, TextInput } from '@react-native-material/core';
+import { Button } from "react-native-paper";
 import { useState } from 'react';
-import { StatusBar } from "expo-status-bar";
 import { styled } from "nativewind";
 import ToastManager, { Toast } from 'toastify-react-native'
-import myGlobalSetting from "../myGlobalSetting";
 import axios from "axios";
-import SyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from "react-redux";
-import { getToken, setToken, setUser } from "../redux/auth/actions";
-import { addValue } from "../redux/test";
-// import SyncStorage from "sync-storage";
+import { setToken, setUser } from "../redux/auth/actions";
+import { API } from "../utils";
+import { useAuthStore, useTestStore } from "../core/store";
 
 const StyledText = styled(Text)
 const StyledTextInput = styled(TextInput)
@@ -24,12 +18,11 @@ const StyledButton = styled(Button)
 
 
 export default function SignInAndSignUpScreen() {
-    const dispatch = useDispatch()
-    const testState = useSelector(state => state)
-    const loginRoute = myGlobalSetting.loginAPI;
-    const registerRoute = myGlobalSetting.signupAPI;
+    const authStore = useAuthStore();
+    const testStore = useTestStore()
 
     const [isRegister, setIsRegister] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
     const [values, setValues] = useState({ username: "", password: "", email: "", repassword: "" });
 
     const handleToggleRegister = (e) => {
@@ -44,42 +37,27 @@ export default function SignInAndSignUpScreen() {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
+        // setIsLoading(true)
         if (validateForm()) {
             const { username, password, email} = values;
-            var route = loginRoute
             var payload = {
                 username: username,
                 password: password,
             }
             if (isRegister) {
-                route = registerRoute
                 payload = {
                     username: username,
                     password: password,
                     email: email
                 }
+                await authStore.fetchSignup(payload)
+                
+            }else await authStore.fetchSignin(payload)
+            if (authStore.response_message!="") {
+                Toast.error(authStore.response_message)
             }
-            const { data } = await axios.post(route, payload)
-            .catch(e => {
-                console.log(e)
-                throw e
-            });
-            if (data.status === false) {
-                Toast.error(data.msg);
-                console.log(data)
-            }
-            if (data.status === true) {
-                dispatch(setToken(data.access_token))
-                dispatch(setUser(
-                    {
-                        id: data.id,
-                        username: data.username
-                    }
-                ))
-                console.log(data);
-                // navigate("/m"); 
-            }
-        } else console.log("no")
+        }
+        // setIsLoading(false) 
     }
     const validateForm = () => {
         const { username, password, email, repassword } = values;
@@ -115,7 +93,7 @@ export default function SignInAndSignUpScreen() {
                         <StyledText variant="h2" className="font-bold text-blue-500">{isRegister ? "Register" : "Login"}</StyledText>
                     </View>
                     <View className="flex flex-col h-4/6 m-8 justify-between">
-                        <View className="w-full">
+                        <View className="w-full flex justify-center">
                             <StyledTextInput
                                 variant="outlined"
                                 color='blue'
@@ -167,6 +145,7 @@ export default function SignInAndSignUpScreen() {
                                 mode="elevated"
                                 uppercase={false}
                                 textColor="white"
+                                // disabled={isLoading}
                                 className="bg-blue-500 my-1 text-lg"
                                 onPress={e => { handleSubmit(e) }}
                             >{isRegister ? "Register" : "Login"}</StyledButton>
@@ -179,7 +158,11 @@ export default function SignInAndSignUpScreen() {
                                         textColor="rgb(59, 130, 246)"
                                         buttonColor="white"
                                         disable
-                                        // onPress={() => dispatch(addValue())}
+                                        onPress={e => {
+                                            // console.log("test:", authStore.access_token)
+                                            testStore.up()
+                                            console.log("test:", testStore.id)
+                                        }}
                                     >Facebook</StyledButton>
                                 </View>
                                 <View className="w-[49%] ml-1">
@@ -190,7 +173,10 @@ export default function SignInAndSignUpScreen() {
                                         textColor="red"
                                         buttonColor="white"
                                         onPress={e => {
-                                            console.log("test:", testState)
+                                            // console.log("test:", testState)
+                                            // testStore.down()
+                                            // console.log("test:", testStore.id)
+                                            console.log("test",authStore.response_message)
                                         }}
                                     >Google</StyledButton>
                                 </View>
