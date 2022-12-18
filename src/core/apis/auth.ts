@@ -6,9 +6,16 @@ const subdirectory = API.AUTH;
 
 export const signup = async (data: ISignup) => {
   try {
-    const res = await AXIOS.post(subdirectory+API.REGISTER, data);
+    const res = await AXIOS.post(subdirectory+API.REGISTER, data)
+    .then((response)=>{
+      return response
+    })
+    .catch((error)=>{
+      return error.response
+    })
     return res;
   } catch (error) {
+    // console.log(error)
     return error;
   }
 };
@@ -27,7 +34,14 @@ export const getusers = async (token: string) => {
       headers: {
         "Authorization": `Bearer ${token}`,
       },
-    });
+    })
+    .then((response)=>{
+      return response
+    })
+    .catch((error)=>{
+      return error.response
+    })
+    ;
     return res;
   } catch (error) {
     return error;

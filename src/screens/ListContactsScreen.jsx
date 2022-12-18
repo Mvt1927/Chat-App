@@ -1,51 +1,54 @@
 // import { StatusBar } from 'expo-status-bar';
-import React from "react";
-import { View, SafeAreaView } from 'react-native';
-import { AppBar, Text, TextInput, IconButton, Icon } from '@react-native-material/core';
-// import { Button } from "react-native-paper";
-// import  from '@react-native-material/core'
-import { styled } from "nativewind";
-import { useDispatch } from "react-redux";
-import { useAuthStore } from "../core/store";
-import { useNavigation } from "@react-navigation/native";
-// import SyncStorage from "sync-storage";
-
-// const StyledText = styled(Text)
-// const StyledTextInput = styled(TextInput)
-// const StyledAppBar = styled(AppBar)
-// const StyledButton = styled(Button)
+import React, { useEffect, useRef } from "react";
+import { View, ScrollView, StatusBar } from 'react-native';
+import { useAuthStore, useContactsStore } from "../core/store";
+import { TextInput } from "react-native-paper";
+import { ListContactsContainer } from "../components/ListContactsScreen";
+import { useSocketStore } from "../core/store/socketStore";
 
 
 export default function ListContactsScreen() {
-    const dispatch = useDispatch()
     const authStore = useAuthStore()
-    const navigation = useNavigation()
+    const contactsStore = useContactsStore()
+    const socketStore = useSocketStore()
+    const socketRef = useRef()
+    useEffect(() => {
+        if (socketStore.socket) {
+            socketStore.socket.current.on("receiveMessage", (data) => {
+                if (!contactsStore.contactsSelected) {
+                    contactsStore.fetchContacts(authStore.access_token)
+                } 
+            })
+        }
+    },[socketStore.socket])
+    useEffect(() => {
+        if (authStore.access_token) {
+            contactsStore.fetchContacts(authStore.access_token)
+            socketRef.current = socketStore.createSocket(authStore.access_token)
+            socketStore.storeSocket(socketRef)
+        }
+        return () => {
+            socketStore.socket.current?.off("receiveMessage");
+        }
+    }, [authStore.access_token])
     return (
-        // <SafeAreaView className="w-full h-full" >
-            <View className="flex h-full" style={{ flex: 1}}>
-
-                <View className="flex justify-center items-center flex-1">
-                    <Text>
-                        Test
-                    </Text>
-                </View>
-                <View className="w-full flex flex-row justify-evenly h-16 border-solid border items-center">
-                    <View
-                        className="border border-solid justify-center flex ite"
-                        onPress={e => authStore.clearAuth()}
-                    >
-                        <Icon name="home" size={24} color="red" />
-                        <Text>Chat</Text>
-
-                    </View>
-                    <View
-                        onPress={() => navigation.navigate("TestStack2")}
-                    />
-                    <View
-                        onPress={() => navigation.navigate("TestStack2")}
+        <View className="h-full bg-white">
+            <ScrollView
+                className="" style={{ overflow: "hidden" }}
+                showsVerticalScrollIndicator={false}
+            >
+                <View className="mx-4 justify-between flex flex-row items-center my-1">
+                    <TextInput
+                        underlineStyle={{ display: 'none' }}
+                        className="w-full bg-gray-100 rounded-full h-10 text-gray-100 hover:text-gray-500"
+                        left={<TextInput.Icon disabled icon="magnify" />}
                     />
                 </View>
-            </View>
-        // </SafeAreaView>
+                <View className="">
+                    <ListContactsContainer data={contactsStore.contacts} />
+                </View>
+            </ScrollView>
+            <StatusBar />
+        </View>
     );
 }

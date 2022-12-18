@@ -18,16 +18,25 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mvt1927.chatapp",
+      "buildNumber": "1.0.0"
     },
     "android": {
+      "package": "com.mvt1927.chatapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1c27fb79-6fcb-4428-8d00-b283f0a0bc5c"
+      }
     }
   }
 }

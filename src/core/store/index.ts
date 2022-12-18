@@ -1,2 +1,3 @@
 export * from './authStore'
-export * from './testStore'
+export * from './contactsStore'
+export * from './chatsStore'

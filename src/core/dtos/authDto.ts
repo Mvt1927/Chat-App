@@ -1,3 +1,5 @@
+import { IChat } from "./chatDto";
+
 export interface ISignin {
   username: string;
   password: string;
@@ -5,8 +7,8 @@ export interface ISignin {
 
 export interface ISignup extends ISignin {
   email: string;
-  username: string;
-  password: string;
+  // username: string;
+  // password: string;
 }
 
 export interface IResAuth {
@@ -16,35 +18,37 @@ export interface IResAuth {
   access_token: string;
 }
 
-export interface IReturnAuth {
-  access_token?: string;
-  id?: number;
-  username?: string
+export interface IReturnAuth extends IReturnAuth_Departed {
   statusCode?: number,
   data?: {
-    access_token: string,
-    user: {
-      id: number,
-      username: string
-    }
+    access_token?: string,
+    user?: IReturnUser
   }
   message?: string,
-  error?: string,
-  msg?:string,
-  status:boolean
+  error?: string
+}
+export interface IReturnAuth_Departed {
+  status?: boolean,
+  access_token?: string
+  id?: number,
+  username?: string
+  msg?: string
+}
+export interface IReturnUser {
+  id: number,
+  username: string
 }
 
-
-export interface IAuth {
+export interface IAuthStore {
   response_message: string;
   access_token: string;
   username: string;
   email: string;
   id: number | undefined;
-  fetchSignin: (data: ISignin) => void;
-  fetchSignup: (data: ISignup) => void;
-  setResponseMessage: (message: string) => void;
-  clearAuth: () => void;
+  fetchSignin(data: ISignin): void;
+  fetchSignup(data: ISignup): void;
+  setResponseMessage(message: string): void;
+  clearAuth(): void;
 }
 
 export interface IUser {
