@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native"
 import { styled } from "nativewind"
 import { View as ReactView, Text as ReactText, Pressable } from "react-native"
 import { Avatar as PaperAvatar } from "react-native-paper"
@@ -10,8 +11,11 @@ const AvatarImage = styled(PaperAvatar.Image)
 export function ContactCardContainer({ user }: { user: UserContactCard }) {
 
     const contactsStore = useContactsStore()
-    const selectContacts =()=>{
+    const navigation = useNavigation()
+
+    const selectContacts = ()=>{
         contactsStore.select(user)
+        navigation.navigate("ChatStack")
     }
 
     return (

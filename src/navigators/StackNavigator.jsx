@@ -8,6 +8,7 @@ import { View } from 'react-native'
 import { COLOR } from '../utils'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ChatScreen } from '../screens/ChatScreen'
+import { useNavigation } from '@react-navigation/native'
 
 
 const Stack = createNativeStackNavigator()
@@ -17,6 +18,7 @@ const StackNavigator = () => {
     const contactsStore = useContactsStore()
     const contact = contactsStore.contactsSelected
     const chatStore = useChatStore()
+    const navigation = useNavigation()
     return (
         <SafeAreaView className="flex-1">
             <Stack.Navigator initialRouteName='BottomNavigatorStack'
@@ -31,8 +33,8 @@ const StackNavigator = () => {
                         component={SignInAndSignUpScreen}
 
                     />
-                    : !contact
-                        ? <Stack.Screen
+                    :<>
+                        <Stack.Screen
                             name='BottomNavigatorStack'
                             component={BottomNavigator}
                             options={{
@@ -40,11 +42,11 @@ const StackNavigator = () => {
                                 animation: 'slide_from_left'
                             }}
                         />
-                        : <Stack.Screen
+                        <Stack.Screen
                             name="ChatStack"
                             component={ChatScreen}
                             options={{
-                                title: contact.username,
+                                title: contact?contact.username:"",
                                 animation: 'fade_from_bottom',
                                 animationDuration: 100,
                                 headerShown: true,
@@ -79,6 +81,7 @@ const StackNavigator = () => {
                                     <StyledComponent
                                         component={IconButton}
                                         onPress={() => {
+                                            navigation.goBack()
                                             contactsStore.clearSelected()
                                             chatStore.clear()
                                         }}
@@ -91,6 +94,7 @@ const StackNavigator = () => {
                             }}
 
                         />
+                        </>
                 }
             </Stack.Navigator>
         </SafeAreaView>

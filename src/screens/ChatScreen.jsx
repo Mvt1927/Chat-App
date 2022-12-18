@@ -1,4 +1,5 @@
 import { Flex, Icon, IconButton } from "@react-native-material/core";
+import { useNavigation } from "@react-navigation/native";
 import { StyledComponent } from "nativewind";
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
@@ -16,6 +17,14 @@ export function ChatScreen() {
     const socketStore = useSocketStore()
     const authStore = useAuthStore()
     const socketRef = useRef()
+    const navigation = useNavigation()
+
+    useEffect(()=>{
+        if (!contactsStore.contactsSelected) {
+            navigation.navigate("BottomNavigatorStack")
+        }
+    },[contactsStore.contactsSelected])
+
     useEffect(() => {
         if (socketStore.socket) {
             socketStore.socket.current.on("receiveMessage", (data) => {
